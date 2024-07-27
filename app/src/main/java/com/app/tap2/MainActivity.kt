@@ -1,6 +1,5 @@
 package com.app.tap2
 
-import android.content.Context
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -16,51 +15,14 @@ import androidx.constraintlayout.compose.ConstraintLayout
 import com.app.tap2.components.CloseFloatingWindowButton
 import com.app.tap2.components.EnableFloatingWindowButton
 import com.app.tap2.components.RequestAccessibilityAccessButton
-import com.app.tap2.roomSql.FloatingWindowDao
-import com.app.tap2.roomSql.FloatingWindowEntity
-import com.app.tap2.roomSql.FloatingWindowRoomDatabase
 import com.app.tap2.ui.theme.Tap2Theme
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
 
 class MainActivity : ComponentActivity() {
-    companion object {
-        private var database: FloatingWindowRoomDatabase? = null
-        var dao: FloatingWindowDao? = null
-        var floatingWindows = mutableMapOf<Int, FloatingWindowEntity>()
-        var _applicationContext: Context? = null
-    }
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        _applicationContext = applicationContext
-      
-
-        // 进行数据库连接
-        database = FloatingWindowRoomDatabase.getDatabase(applicationContext)
-        dao = database?.floatingWindowDao()
-        // 从数据库获取数据
-        CoroutineScope(Dispatchers.Main).launch {
-            // 读取数据,以下是Flow(流)的读取方法
-            dao?.getAllFloatingWindow()
-                // 只接收一次数据,不添加这个的话每次数据库更新都会执行下面的代码
-                /*?.take(1)*/
-                ?.collect { fws ->
-                    // 清空原有数据
-                    floatingWindows.clear()
-                    // 更新数据
-                    for (floatingWindow in fws) {
-                        floatingWindows[floatingWindow.id] = floatingWindow
-                    }
-                }
-        }
         // 启用全屏显示,不然会显示在状态栏下面
         enableEdgeToEdge()
-
         setContent {
-
-
             Tap2Theme {
                 val snackbarHostState = remember { SnackbarHostState() }
 
@@ -89,7 +51,6 @@ class MainActivity : ComponentActivity() {
                             enableFloatingWindowButton,
                             closeFloatingWindowButton
                         ) = createRefs()
-
                         RequestAccessibilityAccessButton(
                             modifier = Modifier
                                 .constrainAs(requestAccessibilityAccessButton) {

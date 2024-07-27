@@ -29,7 +29,7 @@ fun RequestAccessibilityAccessButton(
             // 检查是否获取无障碍权限
             val isAccessibilityEnabled = isAccessibilityServiceEnabled(
                 context,
-                "com.app.tap2/.services.MyAccessibilityService"
+                "com.app.tap2/com.app.tap2.services.MyAccessibilityService"
             )
             if (!isAccessibilityEnabled) {
                 // 前往获取权限页面
