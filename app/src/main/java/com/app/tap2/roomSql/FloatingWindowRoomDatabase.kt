@@ -5,7 +5,6 @@ import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
 import androidx.sqlite.db.SupportSQLiteDatabase
-import com.app.tap2.MainActivity
 import com.app.tap2.utils.convertLayoutParamsToWindowPosition
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -56,7 +55,7 @@ abstract class FloatingWindowRoomDatabase : RoomDatabase() {
                                     )
                                 )
                                 val windowPosition = convertLayoutParamsToWindowPosition(
-                                    MainActivity._applicationContext!!,
+                                    context,
                                     0,
                                     0
                                 )

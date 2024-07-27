@@ -7,7 +7,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
-import com.app.tap2.MainActivity
 import com.app.tap2.services.MyAccessibilityService
 import com.app.tap2.utils.isAccessibilityServiceEnabled
 import com.app.tap2.utils.showSnackbar
@@ -56,7 +55,7 @@ fun EnableFloatingWindowButton(
                 // 当无障碍权限获取后才能开启悬浮窗
                 if (isAccessibilityEnabled) {
                     // 根据数据库内容创建目标点击位置悬浮窗
-                    for ((id, floatingWindow) in MainActivity.floatingWindows) {
+                    for ((id, floatingWindow) in MyAccessibilityService.floatingWindows) {
                         // id为1代表开始点击的按钮,需要特殊处理,而不是统一创建TargetPointIndicator,而是改为StartClickButton
                         if (id != 1) {
                             // 创建目标点击位置的悬浮窗
@@ -69,7 +68,7 @@ fun EnableFloatingWindowButton(
                             // 创建开始点击的悬浮窗
                             MyAccessibilityService.createFloatingWindow(
                                 context,
-                                { StartClickButton(id = id) },
+                                { StartClickButton(id = id, buttonText = "开始点击") },
                                 floatingWindow
                             )
                         }

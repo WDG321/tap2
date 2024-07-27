@@ -15,9 +15,11 @@ import androidx.compose.runtime.Recomposer
 import androidx.compose.ui.platform.AndroidUiDispatcher
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.compositionContext
-import com.app.tap2.MainActivity
 import com.app.tap2.MyComposeViewLifecycleOwner
+import com.app.tap2.components.StartClickButton
+import com.app.tap2.roomSql.FloatingWindowDao
 import com.app.tap2.roomSql.FloatingWindowEntity
+import com.app.tap2.roomSql.FloatingWindowRoomDatabase
 import com.app.tap2.utils.getLayoutParams
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -41,9 +43,12 @@ class MyAccessibilityService : AccessibilityService() {
 
     // 伴生类
     companion object {
+        private var database: FloatingWindowRoomDatabase? = null
+        var dao: FloatingWindowDao? = null
+        var floatingWindows: MutableMap<Int, FloatingWindowEntity> = mutableMapOf()
+
         private var lifecycleOwners = mutableListOf<MyComposeViewLifecycleOwner>()
         private var windowManager: WindowManager? = null
-
 
         private val composeViews = mutableMapOf<Int, ComposeView>()
         private val layoutParamss = mutableMapOf<Int, WindowManager.LayoutParams>()
@@ -55,8 +60,8 @@ class MyAccessibilityService : AccessibilityService() {
         // 更新需要点击的屏幕位置
         // IntArray索引0为x,1为y
         fun updatePosition(xy: IntArray, id: Int) {
-            MainActivity.floatingWindows[id]?.windowPositionX = xy[0]
-            MainActivity.floatingWindows[id]?.windowPositionY = xy[1]
+            floatingWindows[id]?.windowPositionX = xy[0]
+            floatingWindows[id]?.windowPositionY = xy[1]
         }
 
         // 如果给单例类(object)和伴生类中(companion object)的方法加上@JvmStatic注解，就会成为真正的静态方法，在kotlin和java文件中都可以调用。
@@ -116,7 +121,7 @@ class MyAccessibilityService : AccessibilityService() {
                      MainActivity.dao?.updateFloatingWindow(floatingWindow)
                  }*/
                 // 将悬浮窗信息更新到数据库
-                MainActivity.dao?.updateFloatingWindows(MainActivity.floatingWindows.values.toMutableList())
+                dao?.updateFloatingWindows(floatingWindows.values.toMutableList())
                 // 更新数据库完成后，清理相关数据
                 for ((_, composeView) in composeViews) {
                     // 移除悬浮窗
@@ -145,8 +150,8 @@ class MyAccessibilityService : AccessibilityService() {
             // 更新悬浮窗的位置
             windowManager?.updateViewLayout(composeView, layoutParams)
             // 更新悬浮窗数据
-            MainActivity.floatingWindows[id]?.layoutParamsPositionX = layoutParams?.x!!
-            MainActivity.floatingWindows[id]?.layoutParamsPositionY = layoutParams.y
+            floatingWindows[id]?.layoutParamsPositionX = layoutParams?.x!!
+            floatingWindows[id]?.layoutParamsPositionY = layoutParams.y
         }
 
         // 禁止所有悬浮窗响应点击
@@ -179,6 +184,24 @@ class MyAccessibilityService : AccessibilityService() {
         val filter = IntentFilter(Intent.ACTION_SCREEN_OFF)
         // 注册广播接收器
         registerReceiver(screenReceiver, filter)
+        // 进行数据库连接
+        database = FloatingWindowRoomDatabase.getDatabase(applicationContext)
+        dao = database?.floatingWindowDao()
+        // 从数据库获取数据
+        CoroutineScope(Dispatchers.Main).launch {
+            // 读取数据,以下是Flow(流)的读取方法
+            dao?.getAllFloatingWindow()
+                // 只接收一次数据,不添加这个的话每次数据库更新都会执行下面的代码
+                /*?.take(1)*/
+                ?.collect { fws ->
+                    // 清空原有数据
+                    floatingWindows.clear()
+                    // 更新数据
+                    for (floatingWindow in fws) {
+                        floatingWindows[floatingWindow.id] = floatingWindow
+                    }
+                }
+        }
     }
 
 
@@ -186,6 +209,10 @@ class MyAccessibilityService : AccessibilityService() {
     override fun onAccessibilityEvent(event: AccessibilityEvent?) {
         // 自己设置无障碍事件类型为666就代表开始点击
         if (event?.eventType == 666) {
+            // 手动重新创建组件来更新按钮文本,id为1代表开始点击按钮
+            composeViews[1]?.setContent {
+                StartClickButton(id = 1, buttonText = "点击中...")
+            }
             timer = Timer()
             disableClickForAllFloatingWindows()
             val timerTask = object : TimerTask() {
@@ -201,7 +228,7 @@ class MyAccessibilityService : AccessibilityService() {
     }
 
     /* 当系统想要中断您的服务正在提供的反馈（通常是为了响应将焦点移到其他
-     控件等用户操作）时，就会调用此方法。此方法可能会在您的服务的整个生命
+     控件等用户操作）时，就会调用此方法。此方法可能会在服务的整个生命
      周期内被调用多次。*/
     override fun onInterrupt() {
         Log.d("无障碍服务", "无障碍服务被系统中断了")
@@ -215,6 +242,9 @@ class MyAccessibilityService : AccessibilityService() {
         windowManager = null
         // 取消注册广播接收器
         unregisterReceiver(screenReceiver)
+        // 关闭数据库连接
+        database?.close()
+        dao = null
         return super.onUnbind(intent)
     }
 
@@ -222,7 +252,7 @@ class MyAccessibilityService : AccessibilityService() {
     private fun performClick() {
         // 创建一个 GestureDescription.Builder 对象，用于构建手势描述
         val gestureBuilder = GestureDescription.Builder()
-        for ((id, floatingWindow) in MainActivity.floatingWindows) {
+        for ((id, floatingWindow) in floatingWindows) {
             // id为1代表开始点击的按钮,此位置不需要进行自动点击相关的操作
             if (id != 1) {
                 // 创建一个 Path 对象，并将其起始点设置为 (x, y)
@@ -267,9 +297,13 @@ class MyAccessibilityService : AccessibilityService() {
     private fun closeClick() {
         timer?.cancel()
         enableClickForAllFloatingWindows()
+        // 手动重新创建组件来更新按钮文本,id为1代表开始点击按钮
+        composeViews[1]?.setContent {
+            StartClickButton(id = 1, buttonText = "开始点击")
+        }
         // 发送广播,通知开启悬浮窗按钮:悬浮窗已关闭
-        val intent = Intent("点击取消")
-        sendBroadcast(intent)
+        /*val intent = Intent("点击取消")
+        sendBroadcast(intent)*/
     }
 
 }
