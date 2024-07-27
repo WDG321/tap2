@@ -1,0 +1,37 @@
+<accessibility-service xmlns:android="http://schemas.android.com/apk/res/android"
+    android:accessibilityEventTypes="typeAllMask"
+    android:accessibilityFeedbackType="feedbackSpoken"
+
+    android:canRetrieveWindowContent="true"
+    android:description="@string/tap_text"
+    android:notificationTimeout="100"
+    android:canPerformGestures="true"
+    android:settingsActivity="com.example.tap.MainActivity"
+    android:accessibilityFlags="flagRetrieveInteractiveWindows"/>
+    <!--
+        注意!注意!注意!
+        android:accessibilityFlags必须要设置为flagRetrieveInteractiveWindows
+        才能在其他应用界面使用手势模拟点击等操作
+        -->
+
+    <!--
+    accessibilityEventTypes:可以接收的事件类型，例如界面变化、点击等。typeAllMask 接收所有，根据实际情况选择合适的类型，减少电量的消耗
+    accessibilityFeedbackType：事件的反馈类型，暂时不知道用作啥
+    canPerformGestures：是否支持手势,也就是用于实现自动点击
+    canRetrieveWindowContent：是否允许读取窗口中的内容
+    canRequestTouchExplorationMode：在这种模式下，被触摸的项目会被大声说出，用户界面可以被激活通过手势探索
+    description：服务的描述文字
+    settingsActivity：开启服务界面显示一个设置按钮，可以返回应用指定界面
+    notificationTimeout：事件的发送间隔事件，单位毫秒
+    canPerformGestures指定是否允许服务执行手势操作。
+    canTakeScreenshot	是否能够截屏
+    -->
+    <!--
+    android:accessibilityFlags 属性的可选参数包括：
+    flagIncludeNotImportantViews: 包括不重要的视图。当此标志被设置时，辅助功能服务将包括不是用户焦点的视图。
+    flagReportViewIds: 报告视图 ID。当此标志被设置时，辅助功能服务将报告每个可操作控件的视图 ID。
+    flagRequestFilterKeyEvents: 请求过滤按键事件。当此标志被设置时，辅助功能服务将获得处理按键事件的机会，以便筛选并处理特定的按键事件。
+    flagRequestTouchExplorationMode: 请求触摸探索模式。当此标志被设置时，辅助功能服务将请求进入触摸探索模式，以便能够通过触摸和滑动手势来浏览和交互界面。
+    flagRetrieveInteractiveWindows: 检索交互窗口。当此标志被设置时，辅助功能服务将获取与当前交互相关的窗口信息。
+    flagEnableAccessibilityVolume: 启用无障碍音量。当此标志被设置时，辅助功能服务可以接收和处理无障碍音量事件。
+    -->

@@ -1,0 +1,58 @@
+[versions]
+agp = "8.5.1"
+androidxRoomRoomRuntime2 = "2.6.1"
+constraintlayoutCompose = "1.0.1"
+kotlin = "1.9.0"
+coreKtx = "1.10.1"
+junit = "4.13.2"
+junitVersion = "1.1.5"
+espressoCore = "3.5.1"
+lifecycleRuntimeKtx = "2.6.1"
+activityCompose = "1.8.0"
+composeBom = "2024.04.01"
+constraintlayout = "2.1.4"
+roomRxjava2Version = "2.6.1"
+roomRxjava3Version = "2.6.1"
+roomGuavaVersion = "2.6.1"
+roomTestingVersion = "2.6.1"
+roomPagingVersion = "2.6.1"
+uiTestAndroid = "1.6.8"
+lifecycleCommonJvm = "2.8.3"
+lifecycleViewmodelComposeAndroid = "2.8.3"
+roomCommon = "2.6.1"
+roomKtx = "2.6.1"
+
+[libraries]
+androidx-constraintlayout-compose = { module = "androidx.constraintlayout:constraintlayout-compose", version.ref = "constraintlayoutCompose" }
+androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
+androidx-room-room-compiler2 = { module = "androidx.room:room-compiler", version.ref = "androidxRoomRoomRuntime2" }
+androidx-room-room-runtime4 = { module = "androidx.room:room-runtime", version.ref = "androidxRoomRoomRuntime2" }
+junit = { group = "junit", name = "junit", version.ref = "junit" }
+androidx-junit = { group = "androidx.test.ext", name = "junit", version.ref = "junitVersion" }
+androidx-espresso-core = { group = "androidx.test.espresso", name = "espresso-core", version.ref = "espressoCore" }
+androidx-lifecycle-runtime-ktx = { group = "androidx.lifecycle", name = "lifecycle-runtime-ktx", version.ref = "lifecycleRuntimeKtx" }
+androidx-activity-compose = { group = "androidx.activity", name = "activity-compose", version.ref = "activityCompose" }
+androidx-compose-bom = { group = "androidx.compose", name = "compose-bom", version.ref = "composeBom" }
+androidx-ui = { group = "androidx.compose.ui", name = "ui" }
+androidx-ui-graphics = { group = "androidx.compose.ui", name = "ui-graphics" }
+androidx-ui-tooling = { group = "androidx.compose.ui", name = "ui-tooling" }
+androidx-ui-tooling-preview = { group = "androidx.compose.ui", name = "ui-tooling-preview" }
+androidx-ui-test-manifest = { group = "androidx.compose.ui", name = "ui-test-manifest" }
+androidx-ui-test-junit4 = { group = "androidx.compose.ui", name = "ui-test-junit4" }
+androidx-material3 = { group = "androidx.compose.material3", name = "material3" }
+androidx-constraintlayout = { group = "androidx.constraintlayout", name = "constraintlayout", version.ref = "constraintlayout" }
+androidx-ui-test-android = { group = "androidx.compose.ui", name = "ui-test-android", version.ref = "uiTestAndroid" }
+androidx-lifecycle-common-jvm = { group = "androidx.lifecycle", name = "lifecycle-common-jvm", version.ref = "lifecycleCommonJvm" }
+androidx-lifecycle-viewmodel-compose-android = { group = "androidx.lifecycle", name = "lifecycle-viewmodel-compose-android", version.ref = "lifecycleViewmodelComposeAndroid" }
+androidx-room-common = { group = "androidx.room", name = "room-common", version.ref = "roomCommon" }
+androidx-room-ktx = { group = "androidx.room", name = "room-ktx", version.ref = "roomKtx" }
+room-paging = { module = "androidx.room:room-paging", version.ref = "roomPagingVersion" }
+room-testing = { module = "androidx.room:room-testing", version.ref = "roomTestingVersion" }
+room-guava = { module = "androidx.room:room-guava", version.ref = "roomGuavaVersion" }
+room-rxjava3 = { module = "androidx.room:room-rxjava3", version.ref = "roomRxjava3Version" }
+room-rxjava2 = { module = "androidx.room:room-rxjava2", version.ref = "roomRxjava2Version" }
+
+[plugins]
+android-application = { id = "com.android.application", version.ref = "agp" }
+jetbrains-kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
+
